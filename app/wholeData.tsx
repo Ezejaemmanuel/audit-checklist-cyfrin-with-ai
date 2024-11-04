@@ -16,6 +16,7 @@ import { useCategories } from "@/hooks/useAllData";
 import { LoadingSpinner } from "./LoadingSpinner";
 import romans from "romans";
 import { useCompletionStore } from "@/zustand-store";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Helper function for alphabet labels
 const getAlphabetLabel = (num: number): string => {
@@ -71,7 +72,7 @@ const QuestionCard = ({
 
 
             className={cn(
-                "relative",
+                "relative  scroll-mt-6",
                 (question || remediation || references.length > 0) ? "w-[80%] mx-auto" : "w-full"
 
             )}>
@@ -185,6 +186,7 @@ export function DataCard() {
     }
 
     return (
+        <ScrollArea className="h-[calc(100vh-2rem)] w-full">
         <div className="space-y-8 w-full max-w-2xl mx-auto p-4 sm:p-6">
             {data.map((category) => (
                 <Card key={category.id} className="relative">
@@ -242,6 +244,7 @@ export function DataCard() {
                     </CardContent>
                 </Card>
             ))}
-        </div>
+            </div>
+        </ScrollArea>
     );
 }
