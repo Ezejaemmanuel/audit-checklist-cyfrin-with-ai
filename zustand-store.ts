@@ -49,3 +49,32 @@ export const useSidebarStore = create<SidebarStore>()(
         }
     )
 );
+
+interface CompletionState {
+    completedItems: string[];
+    toggleCompletion: (id: string) => void;
+    clearCompleted: () => void;
+    isCompleted: (id: string) => boolean;
+}
+
+export const useCompletionStore = create<CompletionState>()(
+    persist(
+        (set, get) => ({
+            completedItems: [],
+            toggleCompletion: (id: string) =>
+                set((state) => ({
+                    completedItems: state.completedItems.includes(id)
+                        ? state.completedItems.filter((item) => item !== id)
+                        : [...state.completedItems, id],
+                })),
+            clearCompleted: () => set({ completedItems: [] }),
+            isCompleted: (id: string) => get().completedItems.includes(id),
+        }),
+        {
+            name: 'quiz-completion-storage',
+            storage: createJSONStorage(() => localStorage),
+            version: 1,
+        }
+    )
+);
+
