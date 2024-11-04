@@ -7,6 +7,7 @@ interface SidebarStore {
     expandedCategories: string[];
     toggleCategory: (category: string) => void;
     setActiveId: (id: string | null) => void;
+    scrollToItem: (id: string) => void;
     resetState: () => void;
 }
 
@@ -20,6 +21,14 @@ export const useSidebarStore = create<SidebarStore>()(
                 ...state,
                 activeId: id
             })),
+
+            scrollToItem: (id: string) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    set({ activeId: id });
+                }
+            },
 
             toggleCategory: (category: string) => set((state) => {
                 const isCurrentlyExpanded = state.expandedCategories.includes(category);
@@ -49,7 +58,6 @@ export const useSidebarStore = create<SidebarStore>()(
         }
     )
 );
-
 interface CompletionState {
     completedItems: string[];
     toggleCompletion: (id: string) => void;

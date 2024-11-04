@@ -187,12 +187,18 @@ const QuestionCard = ({
                 return index + 1;
         }
     };
-
+    const cardId = `${getLevelIndicator()}-${id}`;
     return (
-        <Card className={cn(
-            "relative",
-            (question || remediation || references.length > 0) ? "w-[80%] mx-auto" : "w-full"
-        )}>
+        <Card
+
+            id={cardId}
+
+
+            className={cn(
+                "relative",
+                (question || remediation || references.length > 0) ? "w-[80%] mx-auto" : "w-full"
+
+            )}>
             <div className="absolute -top-3 -left-3 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
                 {getLevelIndicator()}
             </div>
