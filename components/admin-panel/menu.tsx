@@ -1065,8 +1065,7 @@ export function Menu({ isOpen }: MenuProps) {
                               element.scrollIntoView({ behavior: 'smooth' });
                             }
                           }}
-                          id={itemUniqueId}
-                          data-item-id={itemUniqueId}
+                     
                         >
                           {isItemActive && (
                             <div className="absolute left-2 top-1/2 -translate-y-1/2">

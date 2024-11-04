@@ -58,6 +58,9 @@ export const useSidebarStore = create<SidebarStore>()(
         }
     )
 );
+
+
+
 interface CompletionState {
     completedItems: string[];
     toggleCompletion: (id: string) => void;
