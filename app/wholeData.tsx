@@ -15,8 +15,10 @@ import { cn } from "@/lib/utils";
 import { useCategories } from "@/hooks/useAllData";
 import { LoadingSpinner } from "./LoadingSpinner";
 import romans from "romans";
-import { useCompletionStore } from "@/zustand-store";
+import { useCompletionStore, useSidebarStore } from "@/zustand-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect } from "react";
+import { generateItemId } from "@/lib/id-generators";
 
 // Helper function for alphabet labels
 const getAlphabetLabel = (num: number): string => {
@@ -64,11 +66,10 @@ const QuestionCard = ({
                 return index + 1;
         }
     };
-    const cardId = `${getLevelIndicator()}-${id}`;
     return (
         <Card
 
-            id={cardId}
+            id={id}
 
 
             className={cn(
@@ -174,7 +175,20 @@ const QuestionCard = ({
 
 export function DataCard() {
     const { data, isLoading } = useCategories();
+    const { activeId } = useSidebarStore();
 
+    // Add scroll effect
+    useEffect(() => {
+        if (activeId) {
+            const element = document.getElementById(activeId);
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            }
+        }
+    }, [activeId]);
     if (isLoading) return <LoadingSpinner />;
 
     if (!data) {
@@ -200,7 +214,8 @@ export function DataCard() {
                         {category.data.map((level1, idx1) => (
                             <div key={level1.id} className="space-y-4">
                                 <QuestionCard
-                                    id={level1.id}
+                                    id={generateItemId(0, idx1, level1.id)}
+                                    
                                     description={level1.description}
                                     question={level1.question}
                                     remediation={level1.remediation}
@@ -213,7 +228,7 @@ export function DataCard() {
                                 {level1.data.map((level2, idx2) => (
                                     <div key={level2.id} className="ml-6 space-y-4">
                                         <QuestionCard
-                                            id={level2.id}
+                                            id={generateItemId(1, idx2, level2.id)}
                                             description={level2.description}
                                             question={level2.question}
                                             remediation={level2.remediation}
@@ -226,7 +241,7 @@ export function DataCard() {
                                         {level2.data.map((level3, idx3) => (
                                             <div key={level3.id} className="ml-6">
                                                 <QuestionCard
-                                                    id={level3.id}
+                                                    id={generateItemId(2, idx3, level3.id)}
                                                     description={level3.description}
                                                     question={level3.question}
                                                     remediation={level3.remediation}

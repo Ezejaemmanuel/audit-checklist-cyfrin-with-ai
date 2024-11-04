@@ -827,6 +827,7 @@ import { useCategories } from '@/hooks/useAllData';
 import { useEffect } from "react";
 import { DataLevel3, TransformedCategory, TransformedDataLevel1, TransformedDataLevel2 } from "@/types";
 import romans from "romans";
+import { generateItemId } from "@/lib/id-generators";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -892,23 +893,23 @@ const getRandomIcon = (() => {
   };
 })();
 
-const generateUniqueId = (
-  item: MenuItemType,
-  index: number,
-  level: number = 0
-): string => {
-  const levelIndicator = getLevelIndicator(level, index);
+// const generateUniqueId = (
+//   item: MenuItemType,
+//   index: number,
+//   level: number = 0
+// ): string => {
+//   const levelIndicator = getLevelIndicator(level, index);
 
-  if ('id' in item && item.id) {
-    return `${levelIndicator}-${item.id}`;
-  }
+//   if ('id' in item && item.id) {
+//     return `${levelIndicator}-${item.id}`;
+//   }
 
-  if (isCategoryValid(item)) {
-    return `${levelIndicator}-${item.category}-${index}`;
-  }
+//   if (isCategoryValid(item)) {
+//     return `${levelIndicator}-${item.category}-${index}`;
+//   }
 
-  return `${levelIndicator}-item-${index}`;
-};
+//   return `${levelIndicator}-item-${index}`;
+// };
 
 export function Menu({ isOpen }: MenuProps) {
   const { data: categories, isLoading } = useCategories();
@@ -945,7 +946,7 @@ export function Menu({ isOpen }: MenuProps) {
   ) => {
     if (!isCategoryValid(category) || !category.category) return null;
 
-    const uniqueId = generateUniqueId(category, index);
+    const uniqueId = generateItemId(level, index, category.id);
     const levelIndicator = getLevelIndicator(level, index);
     const isExpanded = expandedCategories.includes(category.category);
     const Icon = getRandomIcon(category.category);
@@ -1043,7 +1044,7 @@ export function Menu({ isOpen }: MenuProps) {
 
               // Handle leaf nodes (DataLevel3)
               if ('question' in item) {
-                const itemUniqueId = `${getLevelIndicator(level + 1, itemIndex)}-${item.id}`;
+                const itemUniqueId = generateItemId(level + 1, itemIndex, item.id);
                 const isItemActive = activeId === itemUniqueId;
 
                 return (
@@ -1060,10 +1061,10 @@ export function Menu({ isOpen }: MenuProps) {
                           )}
                           onClick={() => {
                             setActiveId(itemUniqueId);
-                            const element = document.getElementById(itemUniqueId);
-                            if (element) {
-                              element.scrollIntoView({ behavior: 'smooth' });
-                            }
+                            // const element = document.getElementById(itemUniqueId);
+                            // if (element) {
+                            //   element.scrollIntoView({ behavior: 'smooth' });
+                            // }
                           }}
                      
                         >
@@ -1115,7 +1116,7 @@ export function Menu({ isOpen }: MenuProps) {
           {categories.map((category, index) => (
             <li
               className="w-full rounded-md overflow-hidden backdrop-blur-sm"
-              key={generateUniqueId(category, index)}
+              key={generateItemId(2, index, category.id)}
             >
               {renderCategory(category, 0, index)}
             </li>
