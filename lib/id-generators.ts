@@ -11,7 +11,9 @@ export const getAlphabetLabel = (num: number): string => {
 
 export const generateItemId = (level: number, index: number, baseId: string): string => {
     const levelIndicator = getLevelIndicator(level, index);
-    return `${levelIndicator}-${baseId}`;
+    const currentId = `${levelIndicator}-${baseId}`;
+    console.log("currentId:", currentId);
+    return currentId;
 };
 
 export const getLevelIndicator = (level: number, index: number): string => {
