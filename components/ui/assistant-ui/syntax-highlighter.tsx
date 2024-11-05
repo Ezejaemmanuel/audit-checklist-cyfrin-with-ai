@@ -19,6 +19,6 @@ export const SyntaxHighlighter = makePrismAsyncLightSyntaxHighlighter({
     margin: 0,
     width: "100%",
     background: "transparent",
-    padding: "1.5rem 1rem",
+    padding: "1rem 0.5rem",
   },
 });

@@ -155,15 +155,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCategories } from "@/hooks/useAllData";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { useCompletionStore } from "@/zustand-store";
+import { useCompletionStore, useProjectStore } from "@/zustand-store";
 import { CircularProgress } from "./circularProgress";
 import { QuestionCard } from "./questionCard";
+import { toast } from "sonner";
 
 export function DataCard() {
     const { data, isLoading } = useCategories();
     const { getProgress } = useCompletionStore();
+    const currentProject = useProjectStore((state) => state.currentProject);
+
 
     if (isLoading) return <LoadingSpinner />;
+    if (!currentProject) {
+        toast.error("No current project found");
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <p className="text-destructive text-lg">No Project Found</p>
+            </div>
+        )
+
+    }
     if (!data) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
@@ -173,12 +185,12 @@ export function DataCard() {
     }
 
     // Calculate total progress only for items with questions
-    const totalProgress = getProgress(data || []);
+    const totalProgress = getProgress(currentProject.id, data || []);
 
 
     return (
         <ScrollArea className="h-[calc(100vh-2rem)] w-full">
-            <div className="space-y-6 w-full max-w-5xl mx-auto p-2 sm:p-4 md:p-6">
+            <div className="space-y-6 w-full max-w-5xl mx-auto p-1 sm:p-4 md:p-6">
                 {/* Overall Progress */}
                 <Card className="bg-secondary/5">
                     <CardHeader className="flex flex-row items-center justify-between p-4">
@@ -195,10 +207,10 @@ export function DataCard() {
                 {/* Categories */}
                 {data.map((category) => {
                     // Only calculate progress for items with questions
-                    const categoryProgress = getProgress([category]);
+                    const categoryProgress = getProgress(currentProject.id, [category]);
                     return (
                         <Card key={category.id} className="relative">
-                            <CardHeader className="flex flex-row items-center justify-between p-4">
+                            <CardHeader className="flex flex-row items-center justify-between p-1 md:p-4">
                                 <div className="space-y-1">
                                     <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-muted-foreground">
                                         {category.category}
@@ -213,7 +225,7 @@ export function DataCard() {
                                 />
                             </CardHeader>
 
-                            <CardContent className="space-y-4">
+                            <CardContent className="space-y-1 md:space-y-4">
                                 {/* Level 1 */}
                                 {category.data.map((level1, idx1) => {
                                     const childrenIds = [
@@ -244,7 +256,7 @@ export function DataCard() {
 
                                                 return (
                                                     <div key={level2.id}
-                                                        className="ml-4 sm:ml-6 space-y-4"
+                                                        className="ml-2 sm:ml-6 space-y-4"
                                                     >
                                                         <QuestionCard
                                                             id={level2.id}
@@ -261,7 +273,7 @@ export function DataCard() {
                                                         {/* Level 3 */}
                                                         {level2.data?.map((level3, idx3) => (
                                                             <div key={level3.id}
-                                                                className="ml-4 sm:ml-6"
+                                                                className="ml-2 sm:ml-6"
                                                             >
                                                                 <QuestionCard
                                                                     id={level3.id}

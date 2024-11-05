@@ -4,6 +4,7 @@ import "./globals.css";
 import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
 import { Toaster } from "@/components/ui/sonner"
 import { TenstackProviders } from "./tenstack-provider";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,12 +32,28 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased !scroll-smooth`}
       >
-        <TenstackProviders>
-          <AdminPanelLayout>
-            {children}
-            <Toaster />
-          </AdminPanelLayout>
-        </TenstackProviders>
+        <ClerkProvider
+          appearance={{
+            variables: {
+              colorPrimary: 'hsl(20.5 90.2% 48.2%)',
+            },
+          }}
+
+
+        >
+          <TenstackProviders>
+            <Toaster
+              duration={10000}
+              richColors={true}
+              theme="dark"
+
+            />
+
+            <AdminPanelLayout>
+              {children}
+            </AdminPanelLayout>
+          </TenstackProviders>
+        </ClerkProvider>
       </body>
     </html>
   );

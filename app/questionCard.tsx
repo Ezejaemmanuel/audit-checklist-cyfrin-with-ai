@@ -195,7 +195,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ExternalLink, CheckCircle2, Circle, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import romans from "romans";
-import { useCompletionStore } from "@/zustand-store";
+import { useCompletionStore, useProjectStore } from "@/zustand-store";
+import { toast } from "sonner";
+import { useCopyToClipboard } from "@uidotdev/usehooks";
+import { useState } from "react";
 
 // Helper function for alphabet labels
 const getAlphabetLabel = (num: number): string => {
@@ -249,30 +252,62 @@ export const QuestionCard = ({
     children = [],
 }: QuestionCardProps) => {
     const { isCompleted, toggleCompletion } = useCompletionStore();
-    const completed = isCompleted(id);
+    const [_, copyToClipboard] = useCopyToClipboard();
+    const [hasCopied, setHasCopied] = useState(false);
+    const currentProject = useProjectStore((state) => state.currentProject);
+    if (!currentProject) {
+        toast.error("No current project found");
+        throw new Error("No current project found");
+    }
+    const completed = isCompleted(currentProject.id, id);
 
     // Calculate total progress for all items with questions
 
 
     const handleToggle = () => {
-        toggleCompletion(id, children);
+        toggleCompletion(currentProject.id, id, children);
     };
 
+    const formatPromptText = (): string => {
+        const basePrompt = "As a web3 security expert, ";
+        let messageText = basePrompt;
+
+        if (description) {
+            messageText += `please analyze this security concern:\n\nDescription: ${description}\n`;
+        }
+        if (question) {
+            messageText += `\nQuestion: ${question}\n`;
+        }
+        if (remediation) {
+            messageText += `\nSuggested Remediation: ${remediation}\n`;
+        }
+        if (references?.length) {
+            messageText += `\nReferences: ${references.join(', ')}\n`;
+        }
+        if (tags?.length) {
+            messageText += `\nRelated Tags: ${tags.join(', ')}\n`;
+        }
+
+        messageText += "\n\nPlease provide:\n1. A detailed explanation of the security concern\n2. A Solidity code example demonstrating both vulnerable and secure implementations\n3. Best practices to prevent this issue\n4. Potential impact if exploited";
+
+        return messageText;
+    };
 
     const handleAskAI = () => {
-        console.log({
-            context: {
-                id,
-                level,
-                description,
-                question,
-                remediation,
-                references,
-                tags,
-            }
-        });
-    };
+        const promptText = formatPromptText();
+        copyToClipboard(promptText);
+        setHasCopied(true);
 
+        toast.success('Prompt Copied!', {
+            description: 'The AI prompt has been copied to your clipboard. Paste it in the AI sidebar to continue.',
+            duration: 3000,
+        });
+
+        // Reset the copied state after 2 seconds
+        setTimeout(() => {
+            setHasCopied(false);
+        }, 2000);
+    };
     const getLevelIndicator = () => {
         switch (level) {
             case 'one':
@@ -396,16 +431,26 @@ export const QuestionCard = ({
                         <TooltipTrigger asChild>
                             <button
                                 onClick={handleAskAI}
-                                className="absolute bottom-2 right-2 text-primary hover:text-primary/80"
+                                className={cn(
+                                    "absolute bottom-2 right-2",
+                                    "text-primary hover:text-primary/80",
+                                    hasCopied && "text-green-500"
+                                )}
+                                disabled={hasCopied}
                             >
-                                <Bot className="w-6 h-6 " />
+                                {hasCopied ? (
+                                    <CheckCircle2 className="w-6 h-6" />
+                                ) : (
+                                    <Bot className="w-6 h-6" />
+                                )}
                             </button>
                         </TooltipTrigger>
                         <TooltipContent>
-                            <p>Ask AI</p>
+                            <p>{hasCopied ? 'Copied!' : 'Ask AI'}</p>
                         </TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
+
             </CardContent>
         </Card>
     );

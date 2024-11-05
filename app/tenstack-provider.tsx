@@ -34,7 +34,7 @@ export function TenstackProviders(props: { children: React.ReactNode }) {
     return (
         <QueryClientProvider client={queryClient}>
             {props.children}
-            <ReactQueryDevtools initialIsOpen={true} buttonPosition='top-left' position='left' />
+            <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" position='left' />
         </QueryClientProvider>
     )
 }

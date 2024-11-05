@@ -27,28 +27,31 @@ import {
 import { MarkdownText } from "@/components/ui/assistant-ui/markdown-text";
 import { TooltipIconButton } from "@/components/ui/assistant-ui/tooltip-icon-button";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "../scroll-area";
 
 export const MyThread: FC = () => {
   return (
-    <ThreadPrimitive.Root className="bg-background h-full text-sm">
-      <ThreadPrimitive.Viewport className="flex h-full flex-col items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-8">
-        <MyThreadWelcome />
+    <ThreadPrimitive.Root className="bg-background h-full text-xs">
+      <ScrollArea className="h-full">
+        <ThreadPrimitive.Viewport className="flex h-full flex-col items-center overflow-y-scroll scroll-smooth bg-inherit px-4 pt-8">
+          <MyThreadWelcome />
 
-        <ThreadPrimitive.Messages
-          components={{
-            UserMessage: MyUserMessage,
-            EditComposer: MyEditComposer,
-            AssistantMessage: MyAssistantMessage,
-          }}
-        />
+          <ThreadPrimitive.Messages
+            components={{
+              UserMessage: MyUserMessage,
+              EditComposer: MyEditComposer,
+              AssistantMessage: MyAssistantMessage,
+            }}
+          />
 
-        <div className="min-h-8 flex-grow" />
+          <div className="min-h-8 flex-grow" />
 
-        <div className="sticky bottom-0 mt-3 flex w-full max-w-2xl flex-col items-center justify-end rounded-t-lg bg-inherit pb-4">
-          <MyThreadScrollToBottom />
-          <MyComposer />
-        </div>
-      </ThreadPrimitive.Viewport>
+          <div className="sticky bottom-0 mt-3 flex w-full max-w-2xl flex-col items-center justify-end rounded-t-lg bg-inherit pb-4">
+            <MyThreadScrollToBottom />
+            <MyComposer />
+          </div>
+        </ThreadPrimitive.Viewport>
+      </ScrollArea>
     </ThreadPrimitive.Root>
   );
 };
@@ -59,7 +62,7 @@ const MyThreadScrollToBottom: FC = () => {
       <TooltipIconButton
         tooltip="Scroll to bottom"
         variant="outline"
-        className="absolute -top-8 rounded-full disabled:invisible"
+        className="absolute -top-8  rounded-full disabled:invisible"
       >
         <ArrowDownIcon />
       </TooltipIconButton>
