@@ -5,7 +5,7 @@ import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
 import { Toaster } from "@/components/ui/sonner"
 import { TenstackProviders } from "./tenstack-provider";
 import { ClerkProvider } from "@clerk/nextjs";
-
+import { Analytics } from "@vercel/analytics/react"
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -52,6 +52,7 @@ export default function RootLayout({
             />
 
             <AdminPanelLayout>
+              <Analytics />
               {children}
             </AdminPanelLayout>
           </TenstackProviders>
