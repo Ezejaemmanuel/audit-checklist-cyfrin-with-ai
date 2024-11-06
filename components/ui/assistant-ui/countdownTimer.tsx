@@ -1,8 +1,6 @@
-import { Timer } from "lucide-react";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// Countdown Timer Component
+// Update CountdownTimer component
 export const CountdownTimer = ({ seconds: initialSeconds }: { seconds: number }) => {
     const [seconds, setSeconds] = useState(initialSeconds);
 
@@ -21,9 +19,8 @@ export const CountdownTimer = ({ seconds: initialSeconds }: { seconds: number })
     }, []);
 
     return (
-        <div className="flex items-center gap-2 text-primary font-medium">
-            <Timer className="h-4 w-4 animate-pulse" />
-            <span>Please wait {seconds} seconds</span>
-        </div>
+        <span>
+            Please wait {seconds}s
+        </span>
     );
 };

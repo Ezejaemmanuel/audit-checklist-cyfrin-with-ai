@@ -21,12 +21,28 @@ interface APIErrorResponse {
     code: string;
     status: number;
 }
-const AuthErrorDialog = ({ error }: { error: APIErrorResponse }) => {
+
+const AuthErrorDialog = ({
+    error,
+    onClose
+}: {
+    error: APIErrorResponse;
+    onClose: () => void;
+}) => {
     const [open, setOpen] = useState(true);
-    const router = useRouter();
+
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen);
+        if (!newOpen) {
+            onClose();
+        }
+    };
 
     return (
-        <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+        >
             <AlertDialogContent className="bg-background border border-border sm:max-w-[425px]">
                 <AlertDialogHeader>
                     <AlertDialogTitle className="text-foreground flex items-center gap-2">
@@ -42,170 +58,146 @@ const AuthErrorDialog = ({ error }: { error: APIErrorResponse }) => {
                         </div>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="sm:space-x-2">
+                <AlertDialogFooter className="flex flex-col sm:flex-row gap-2">
                     <AlertDialogCancel
                         className="border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
-                        onClick={() => setOpen(false)}
+                        onClick={() => handleOpenChange(false)}
                     >
                         Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction
-                        className="bg-primary text-primary-foreground hover:bg-primary/90"
-                    >
-                        <SignUpButton>
-                            sign up
-                        </SignUpButton>
-                    </AlertDialogAction>
-                    <Button
-                        variant="outline"
-                        className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
 
-                    >
-                        <SignInButton>
-                            sign in
-                        </SignInButton>
+                    {/* Remove the AlertDialogAction wrapper */}
+                    <SignUpButton >
+                        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                            Sign up
+                        </Button>
+                    </SignUpButton>
 
-                    </Button>
+                    <SignInButton >
+                        <Button
+                            variant="outline"
+                            className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                        >
+                            Sign in
+                        </Button>
+                    </SignInButton>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
     );
 };
+
+
+
 export function MyRuntimeProvider({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const [authError, setAuthError] = useState<APIErrorResponse | null>(null);
     const chat = useChat({
         api: "/api/chat",
-        // onError: (error) => {
-        //     try {
-        //         // Try to parse error message as JSON
-        //         const errorData: ErrorResponse = JSON.parse(error.message);
 
-        //         // Show different toast styles based on error type
-        //         switch (errorData.code) {
-        //             case 'RATE_LIMIT_EXCEEDED':
-        //                 toast.error('Rate limit exceeded. Please wait a moment.', {
-        //                     description: 'Try again in 60 seconds',
-        //                     duration: 5000,
-        //                 });
-        //                 break;
-
-        //             case 'TOKEN_LIMIT_EXCEEDED':
-        //                 toast.warning('Message too long', {
-        //                     description: 'Please reduce your message length and try again',
-        //                     duration: 4000,
-        //                 });
-        //                 break;
-
-        //             case 'API_KEY_MISSING':
-        //                 toast.error('Configuration Error', {
-        //                     description: 'API key is missing. Please contact support.',
-        //                     duration: 5000,
-        //                 });
-        //                 break;
-
-        //             case 'VALIDATION_ERROR':
-        //                 toast.error('Invalid Input', {
-        //                     description: errorData.error,
-        //                     duration: 4000,
-        //                 });
-        //                 break;
-
-        //             case 'NETWORK_ERROR':
-        //                 toast.error('Network Error', {
-        //                     description: 'Please check your connection and try again',
-        //                     duration: 4000,
-        //                 });
-        //                 break;
-
-        //             default:
-        //                 toast.error('An error occurred', {
-        //                     description: errorData.error || 'Please try again later',
-        //                     duration: 4000,
-        //                 });
-        //         }
-        //     } catch {
-        //         // If error is not JSON, show generic error toast
-        //         toast.error('Something went wrong', {
-        //             description: error.message,
-        //             duration: 4000,
-        //         });
-        //     }
-        // },
         onError: (error: Error) => {
+            console.log("this is the error that is thrown by the onError function", error);
             try {
                 const errorResponse: APIErrorResponse = JSON.parse(error.message);
-                if (errorResponse.code === "AUTHENTICATION_REQUIRED") {
-                    return <AuthErrorDialog error={errorResponse} />;
-                }
-                if (errorResponse.code === "RATE_LIMIT_EXCEEDED") {
-                    toast.error('Rate Limit Exceeded', {
-                        description: (
-                            <div className="flex flex-col space-y-3">
-                                <div className="text-sm text-destructive">
-                                    {errorResponse.error}
-                                </div>
-                                <CountdownTimer seconds={30} />
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <span>Meanwhile, try:</span>
-                                    <Button
-                                        variant="link"
-                                        className="h-auto p-0 text-primary inline-flex items-center gap-1"
-                                        onClick={() => window.open('https://chat.openai.com', '_blank')}
-                                    >
-                                        ChatGPT
-                                        <ExternalLink className="h-3 w-3" />
-                                    </Button>
-                                    <span>or</span>
-                                    <Button
-                                        variant="link"
-                                        className="h-auto p-0 text-primary inline-flex items-center gap-1"
-                                        onClick={() => window.open('https://www.perplexity.ai', '_blank')}
-                                    >
-                                        Perplexity
-                                        <ExternalLink className="h-3 w-3" />
-                                    </Button>
-                                </div>
-                            </div>
-                        ),
-                        duration: 31000, // Slightly longer than countdown
-                        className: "bg-background border border-border rounded-[var(--radius)] p-4 shadow-lg",
-                    });
-                    return;
-                }
 
-                toast.error('Error Details', {
-                    description: (
-                        <div className="flex flex-col space-y-2 font-medium">
-                            <div className="flex flex-col space-y-1.5 text-sm">
-                                <div className="flex items-start">
-                                    <span className="text-muted-foreground min-w-[4.5rem]">Message:</span>
-                                    <span className="text-destructive ml-2">
-                                        {errorResponse.error}
+
+                if (errorResponse.code === "RATE_LIMIT_EXCEEDED") {
+                    // Extract seconds using regex
+                    const secondsMatch = errorResponse.error.match(/(\d+)\s*seconds/);
+                    const seconds = secondsMatch ? parseInt(secondsMatch[1]) : 30; // fallback to 30 seconds if not found
+
+                    toast.error('', {
+                        description: (
+                            <div className="flex flex-col space-y-2.5 text-rose-500">
+                                {/* Status Badge */}
+                                <div className="inline-flex items-center gap-1.5">
+                                    <Timer className="h-3.5 w-3.5  animate-pulse" />
+                                    <span className="text-[10px] font-medium tracking-wide ">
+                                        Rate Limited
                                     </span>
                                 </div>
 
-                                <div className="flex items-start">
-                                    <span className="text-muted-foreground min-w-[4.5rem]">Code:</span>
-                                    <span className="text-primary ml-2">
+                                {/* Error Message */}
+                                <p className="text-[11px] font-medium leading-relaxed ">
+                                    {errorResponse.error}
+                                </p>
+
+                                {/* Timer */}
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[10px]">
+                                        <CountdownTimer seconds={seconds} />
+                                    </span>
+                                </div>
+
+                                {/* Alternative Options */}
+                                <div className="flex items-center gap-1.5 text-[10px] ">
+                                    <span className="opacity-75">Try:</span>
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            variant="link"
+                                            className="h-auto p-0  inline-flex items-center gap-1 text-[10px]"
+                                            onClick={() => window.open('https://chat.openai.com', '_blank')}
+                                        >
+                                            ChatGPT
+                                            <ExternalLink className="h-2.5 w-2.5 opacity-70" />
+                                        </Button>
+                                        <span className="opacity-50">·</span>
+                                        <Button
+                                            variant="link"
+                                            className="h-auto p-0 inline-flex items-center gap-1 text-[10px]"
+                                            onClick={() => window.open('https://www.perplexity.ai', '_blank')}
+                                        >
+                                            Perplexity
+                                            <ExternalLink className="h-2.5 w-2.5 opacity-70" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ),
+                        duration: (seconds * 1000), // Convert seconds to milliseconds
+                        className: "bg-background border border-border rounded-[var(--radius)] p-4 shadow-lg",
+                        style: {
+                            padding: '0.75rem',
+                        },
+                    });
+                    return;
+                }
+                // Enhanced toast styling
+                toast.error('', {
+                    description: (
+                        <div className="flex items-start gap-3 w-full max-w-[300px]">
+                            <div className="h-6 w-6 rounded-full bg-rose-200/30 flex items-center justify-center flex-shrink-0">
+                                <XCircle className="h-4 w-4 text-rose-500" />
+                            </div>
+
+                            <div className="flex flex-col space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="inline-flex items-center rounded-md bg-rose-50/50 px-2 py-1 text-[10px] font-medium text-rose-700 ring-1 ring-inset ring-rose-600/20">
                                         {errorResponse.code}
                                     </span>
                                 </div>
 
-                                <div className="flex items-start">
-                                    <span className="text-muted-foreground min-w-[4.5rem]">Status:</span>
-                                    <span className="text-accent-foreground ml-2">
-                                        {errorResponse.status}
-                                    </span>
-                                </div>
+                                <p className="text-xs text-rose-700/90 leading-relaxed">
+                                    {errorResponse.error}
+                                </p>
                             </div>
                         </div>
                     ),
-                    duration: 6000,
-                    className: "bg-background border border-border rounded-[var(--radius)] p-4 shadow-lg",
+                    duration: 5000,
+                    className: "bg-rose-50 border border-rose-200 rounded-lg shadow-sm",
+                    style: {
+                        padding: '0.75rem',
+                    },
                 });
+
+                if (errorResponse.code === "AUTHENTICATION_REQUIRED") {
+                    setAuthError(errorResponse);
+                    return;
+                }
+
 
                 console.error('API Error:', errorResponse);
 
@@ -232,6 +224,12 @@ export function MyRuntimeProvider({
 
             <AssistantRuntimeProvider runtime={runtime}>
                 {children}
+                {authError && (
+                    <AuthErrorDialog
+                        error={authError}
+                        onClose={() => setAuthError(null)}
+                    />
+                )}
             </AssistantRuntimeProvider>
         </>
     );

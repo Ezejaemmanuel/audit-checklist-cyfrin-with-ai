@@ -230,7 +230,7 @@ export const runtime = 'edge';
 // Rate limiter configuration
 const ratelimit = new Ratelimit({
     redis: redis,
-    limiter: Ratelimit.fixedWindow(10, '30s'),
+    limiter: Ratelimit.fixedWindow(10, '60s'),
     prefix: "ai-api-ratelimit",
     analytics: true, // Enable analytics for monitoring
 });

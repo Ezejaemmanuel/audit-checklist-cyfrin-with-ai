@@ -46,6 +46,8 @@ export default function RootLayout({
               duration={10000}
               richColors={true}
               theme="dark"
+              position="top-right"
+              closeButton={true}
 
             />
 

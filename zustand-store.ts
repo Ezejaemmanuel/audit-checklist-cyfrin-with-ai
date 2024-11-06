@@ -163,16 +163,6 @@ export interface Project {
     name: string;
     lastUpdatedAt: Date;
 }
-
-interface ProjectStore {
-    projects: Project[];
-    currentProject: Project | null;
-    addProject: (name: string) => boolean;
-    setCurrentProject: (project: Project) => void;
-    getLatestProject: () => Project | null;
-    updateProjectTimestamp: (projectId: string) => void;
-}
-
 // Completion Store Types
 interface CompletionState {
     completionData: Record<string, { // projectId -> completion data
@@ -184,12 +174,30 @@ interface CompletionState {
     getProgress: (projectId: string, items: any[]) => { completed: number; total: number };
 }
 
+
+
+interface ProjectStore {
+    projects: Project[];
+    currentProject: Project | null;
+    addProject: (name: string) => boolean;
+    setCurrentProject: (project: Project) => void;
+    getLatestProject: () => Project | null;
+    updateProjectTimestamp: (projectId: string) => void;
+    initiateNewProject: () => void;
+
+}
+
+
+
 // Project Store Implementation
 export const useProjectStore = create<ProjectStore>()(
     persist(
         (set, get) => ({
             projects: [],
             currentProject: null,
+            initiateNewProject: () => {
+                set({ currentProject: null });
+            },
 
             addProject: (name: string) => {
                 const { projects } = get();
