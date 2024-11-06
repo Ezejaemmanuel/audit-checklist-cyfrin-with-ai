@@ -86,6 +86,7 @@ import { MyAssistantModal } from "@/components/ui/assistant-ui/assistant-modal";
 import { useWindowSize } from "@uidotdev/usehooks";
 import { MyRuntimeProvider } from "@/components/ui/assistant-ui/my-first-custom-assistant-provider";
 import { ProjectDialogs } from "./ProjectDialog";
+import { WelcomeDialogWrapper } from "./welcome-dialog";
 
 export default function Page() {
 
@@ -95,46 +96,48 @@ export default function Page() {
   const isLargeScreen = width !== null && width >= 1024;
 
   return (
-    <ProjectDialogs>
-      <ContentLayout title="Test">
-        <MyRuntimeProvider >
-          {width !== null && (
-            <>
-              {isLargeScreen ? (
-                // Large Screen Layout
-                <div className="h-[calc(100vh-4rem)] w-full">
-                  <ResizablePanelGroup
-                    direction="horizontal"
-                    className="h-full w-full rounded-lg border"
-                  >
-                    <ResizablePanel defaultSize={60} minSize={50}>
-                      <div className="h-full w-full">
-                        <DataCard />
-                      </div>
-                    </ResizablePanel>
+    <WelcomeDialogWrapper>
+      <ProjectDialogs>
+        <ContentLayout title="Test">
+          <MyRuntimeProvider >
+            {width !== null && (
+              <>
+                {isLargeScreen ? (
+                  // Large Screen Layout
+                  <div className="h-[calc(100vh-4rem)] w-full">
+                    <ResizablePanelGroup
+                      direction="horizontal"
+                      className="h-full w-full rounded-lg border"
+                    >
+                      <ResizablePanel defaultSize={60} minSize={50}>
+                        <div className="h-full w-full">
+                          <DataCard />
+                        </div>
+                      </ResizablePanel>
 
-                    <ResizableHandle withHandle />
+                      <ResizableHandle withHandle />
 
-                    <ResizablePanel defaultSize={40} minSize={20}>
-                      <div className="h-full w-full p-6">
-                        <MyThread />
-                      </div>
-                    </ResizablePanel>
-                  </ResizablePanelGroup>
-                </div>
-              ) : (
-                // Small Screen Layout
-                <div className="h-[calc(100vh-4rem)] w-full flex flex-col">
-                  <div className="flex-1">
-                    <DataCard />
+                      <ResizablePanel defaultSize={40} minSize={20}>
+                        <div className="h-full w-full p-6">
+                          <MyThread />
+                        </div>
+                      </ResizablePanel>
+                    </ResizablePanelGroup>
                   </div>
-                  <MyAssistantModal />
-                </div>
-              )}
-            </>
-          )}
-        </MyRuntimeProvider>
-      </ContentLayout>
-    </ProjectDialogs>
+                ) : (
+                  // Small Screen Layout
+                  <div className="h-[calc(100vh-4rem)] w-full flex flex-col">
+                    <div className="flex-1">
+                      <DataCard />
+                    </div>
+                    <MyAssistantModal />
+                  </div>
+                )}
+              </>
+            )}
+          </MyRuntimeProvider>
+        </ContentLayout>
+      </ProjectDialogs>
+    </WelcomeDialogWrapper>
   );
 }

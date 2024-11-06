@@ -15,18 +15,20 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Plus, History, ArrowRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Project, useProjectStore } from '@/zustand-store';
+import { Project, useProjectStore, useWelcomeStore } from '@/zustand-store';
 
 interface ProjectDialogsProps {
     children: React.ReactNode;
 }
 
 export function ProjectDialogs({ children }: ProjectDialogsProps) {
-    const [showInitial, setShowInitial] = useState(true);
+
     const [showProjects, setShowProjects] = useState(false);
     const [showNewProject, setShowNewProject] = useState(false);
     const [newProjectName, setNewProjectName] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const { hasSeenWelcome } = useWelcomeStore();
+    const [showInitial, setShowInitial] = useState(false);
 
     const {
         projects,
@@ -40,9 +42,14 @@ export function ProjectDialogs({ children }: ProjectDialogsProps) {
 
     // Check if we should show the initial dialog
     useEffect(() => {
-        const shouldShowInitial = !currentProject && !showProjects && !showNewProject;
+        const shouldShowInitial = !currentProject && !showProjects && !showNewProject && hasSeenWelcome;
         setShowInitial(shouldShowInitial);
-    }, [currentProject, showProjects, showNewProject]);
+    }, [currentProject, showProjects, showNewProject, hasSeenWelcome]);
+
+    // Early return if project is selected
+    if (!showInitial && currentProject) {
+        return <>{children}</>;
+    }
 
     const handleCreateProject = () => {
         const trimmedName = newProjectName.trim();

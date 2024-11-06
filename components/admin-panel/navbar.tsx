@@ -28,7 +28,7 @@ export function Navbar({ title }: NavbarProps) {
           <Button
             variant="outline"
             className="w-9 h-9 p-0 border-muted-foreground/30 hover:border-muted-foreground/50 hover:bg-muted/50"
-            onClick={() => window.open('https://github.com/yourusername/yourrepo', '_blank')}
+            onClick={() => window.open('https://github.com/Ezejaemmanuel/audit-checklist-cyfrin-with-ai', '_blank')}
           >
             <Github className="h-4 w-4 text-muted-foreground" />
           </Button>

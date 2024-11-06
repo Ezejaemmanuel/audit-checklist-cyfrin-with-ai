@@ -187,7 +187,24 @@ interface ProjectStore {
 
 }
 
+interface WelcomeDialogStore {
+    hasSeenWelcome: boolean;
+    setHasSeenWelcome: (seen: boolean) => void;
+}
 
+export const useWelcomeStore = create<WelcomeDialogStore>()(
+    persist(
+        (set) => ({
+            hasSeenWelcome: false,
+            setHasSeenWelcome: (seen) => set({ hasSeenWelcome: seen }),
+        }),
+        {
+            name: 'welcome-dialog-storage',
+            storage: createJSONStorage(() => localStorage),
+            version: 1
+        }
+    )
+);
 
 // Project Store Implementation
 export const useProjectStore = create<ProjectStore>()(
@@ -245,7 +262,7 @@ export const useProjectStore = create<ProjectStore>()(
         }),
         {
             name: 'audit-project-storage',
-            storage: createJSONStorage(() => sessionStorage),
+            storage: createJSONStorage(() => localStorage),
             partialize: (state) => ({
                 projects: state.projects,
                 currentProject: state.currentProject,
