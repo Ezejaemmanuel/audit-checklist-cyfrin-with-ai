@@ -4,18 +4,13 @@ import { useChat } from "ai/react";
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { useVercelUseChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { toast } from "sonner";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../alert-dialog";
-import { useRouter } from "next/router";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../alert-dialog";
 import { useState } from "react";
 import { Button } from "../button";
-import { Lock, LogIn, UserPlus, AlertCircle, XCircle, Timer, ExternalLink, LockIcon } from "lucide-react";
+import { XCircle, Timer, ExternalLink, LockIcon } from "lucide-react";
 import { CountdownTimer } from "./countdownTimer";
 import { SignInButton, SignUpButton } from '@clerk/nextjs'
-interface ErrorResponse {
-    error: string;
-    code: string;
-    status: number;
-}
+
 interface APIErrorResponse {
     error: string;
     code: string;
@@ -201,7 +196,7 @@ export function MyRuntimeProvider({
 
                 console.error('API Error:', errorResponse);
 
-            } catch (parseError) {
+            } catch {
                 toast.error('Error Details', {
                     description: (
                         <div className="text-sm text-destructive">
